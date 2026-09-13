@@ -1,10 +1,10 @@
 import { Formik } from 'formik'
-import React, { useState } from 'react'
-import { Form as AntForm, Button, Checkbox, Input, message } from "antd"
-import { signUpSchema } from "./SignUpSchema"
+import { useState } from 'react'
+import { Form as AntForm, Button, Input } from "antd"
 import "./SignUp.css"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
+import { useDispatch } from 'react-redux'
+import { handleSignUp } from '../../../store/features/auth/authThunk'
 
 const SignUp = () => {
 
@@ -12,9 +12,6 @@ const SignUp = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [errorMessage, setErrorMessage] = useState("")
-
-    const BASE_URL = "http://localhost:3000"
 
     const initialValues = {
         name: "",
@@ -24,27 +21,17 @@ const SignUp = () => {
 
     const navigate = useNavigate();
 
-    const onSubmit = (values, { resetForm }) => {
-        resetForm();
-    }
+    const dispatch = useDispatch()
 
-    const handleSignup = async () => {
+    const handleSubmit = async () => {
         try {
-            const addUser = await axios.post(`${BASE_URL}/signup`, {
+            await dispatch(handleSignUp({
                 name,
                 email,
                 password
-            })
-            const createdUser = addUser.data?.data
-            console.log("user created", createdUser)
-            message.success("Signup Sucessfull")
-            setEmail("")
-            navigate("/login")
+            })).unwrap()
         } catch (error) {
-            if (error.response) {
-                message.error(error.response.data.message)
-            }
-            console.error("Error adding user", error)
+            console.error("Error while Creating User", error)
         }
     }
 
@@ -55,10 +42,8 @@ const SignUp = () => {
 
                 <Formik
                     initialValues={initialValues}
-                    onSubmit={onSubmit}
                 >
                     {({
-                        handleSubmit,
                         handleBlur,
                         values,
                         errors,
@@ -113,14 +98,14 @@ const SignUp = () => {
 
                             <div className="signup-card-footer">
                                 <Button
-                                    onClick={() => handleSignup()}
+                                    onClick={() => handleSubmit()}
                                     type='primary'
                                     htmlType='submit'
                                     className='submit-btn'
                                 >Sign Up</Button>
 
                                 <Button
-                                    onClick={() => navigate("/login")}
+                                    onClick={() => navigate("/")}
                                     type='primary'
                                     className='submit-btn-black'
                                 >Log in</Button>
@@ -130,7 +115,6 @@ const SignUp = () => {
                     }
                 </Formik>
             </div>
-
         </div>
     )
 }

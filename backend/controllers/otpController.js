@@ -5,17 +5,6 @@ import { User } from "../models/User.js"
 import { generateOtp } from "../utils/helper.js"
 import transporter from "../services/emailService.js"
 
-export const getOtp = async (request, response) => {
-    try {
-        const data = await Otp.find()
-        response.status(200).json({ message: "OTP data fetched", data })
-    } catch (error) {
-        console.error("Error fetching otp data", error)
-        response.status(500).json({ message: "Internal server error" })
-        return
-    }
-}
-
 export const verifyOtp = async (request, response) => {
 
     const { otp, email } = request.body

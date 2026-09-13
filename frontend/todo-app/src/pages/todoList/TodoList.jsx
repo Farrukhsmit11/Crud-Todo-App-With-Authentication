@@ -1,14 +1,10 @@
 import React, { useState } from 'react'
 import "./TodoList.css"
-import { MdDelete } from "react-icons/md";
 import { MdEdit } from "react-icons/md";
 import { Button, Form, Input, message, Spin } from "antd"
-import { useEffect } from 'react';
-import axios from "axios"
 import { PlusOutlined } from "@ant-design/icons"
 import { CiEdit } from "react-icons/ci";
 import { FiTrash2 } from "react-icons/fi";
-import Loader from "../../components/loader/Loader"
 import { CiLogout } from "react-icons/ci";
 import { useNavigate } from "react-router-dom"
 
@@ -28,67 +24,6 @@ const TodoList = () => {
   const [editText, setEditText] = useState("");
   const [editId, setEditId] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [IsLoading, setIsLoading] = useState(true);
-
-  const getTodo = async () => {
-    try {
-      const response = await axios.get(`${getUrl()}/todos`)
-      const data = response?.data?.data
-      setTodos(data)
-    } catch (error) {
-      console.error("error fetching todos", error)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  const addTodo = async () => {
-    setIsLoading(true)
-    event.preventDefault();
-    try {
-      await axios.post(`${getUrl()}/add-todos`, {
-        title: inputValue
-      })
-      message.success("Todo added sucessfully ")
-      getTodo();
-      setInputValue("")
-    } catch (error) {
-      message.error("todo cannot be empty", error)
-    }
-  }
-
-  const deleteTodo = async () => {
-    event.preventDefault()
-    try {
-      const deleteTodo = await axios.delete(`${getUrl()}/delete-todos`)
-      const deletedData = deleteTodo.data?.data
-      getTodo();
-      message.success("todo deleted sucessfully")
-
-    } catch (error) {
-      console.error("error deleting todo", error)
-    }
-  }
-
-  const editTodo = async (id) => {
-    event.preventDefault();
-    try {
-      const editTodo = await axios.patch(`${getUrl()}/edit-todos/${id}`, {
-        title: editText
-      })
-      const res1 = editTodo.data?.data
-      setIsEditing(false);
-      message.success("todo edited sucessfully")
-      getTodo();
-    } catch (error) {
-      console.error("errro editing todo", error)
-    }
-  }
-
-  useEffect(() => {
-    getTodo()
-  }, [])
-
 
   const navigate = useNavigate()
 
@@ -109,7 +44,7 @@ const TodoList = () => {
         </div>
 
         <Form
-          onFinish={addTodo}
+          // onFinish={addTodo}
           layout='vertical'
           form={form}
           className='todo-form'
@@ -136,11 +71,11 @@ const TodoList = () => {
             Add Task
           </Button>
 
-          {IsLoading ? (
+          {/* {IsLoading ? (
             <Spin size="medium" tip="Loading, please wait..." />
-          ) : (
-            <ul className='list-group'>
-              {todos?.map((todo, index) => {
+          ) : ( */}
+          {/* <ul className='list-group'>
+              {/* {todos?.map((todo, index) => {
                 return (
                   <>
                     <div key={index} className="list-parent"
@@ -184,9 +119,8 @@ const TodoList = () => {
                     </div>
                   </>
                 )
-              })}
-            </ul>
-          )}
+              })} */}
+          {/* </ul>  */}
         </Form>
       </div>
     </div >

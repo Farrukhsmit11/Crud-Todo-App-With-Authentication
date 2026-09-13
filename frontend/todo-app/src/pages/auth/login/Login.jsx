@@ -1,65 +1,38 @@
-import React from 'react'
 import { Formik } from "formik"
 import { validationSchema } from './Validation'
-import { Form as AntForm, Button, Checkbox, Input, message } from "antd"
+import { Form as AntForm, Button, Checkbox, Input } from "antd"
 import "./Login.css"
 import { useNavigate } from "react-router-dom"
-import axios from "axios"
 import { useState } from 'react'
+import { useDispatch } from "react-redux"
+import { handleLogin } from "../../../store/features/auth/authThunk"
 
-const Login = ({ userEmail }) => {
+const Login = () => {
 
   const [form] = AntForm.useForm();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState("")
-  const [loading, setLoading] = useState(false);
-
-  const BASE_URL = "http://localhost:3000"
 
   const initialValues = {
     email: "",
     password: ""
   }
 
-
-  const onSubmit = (values, { resetForm }) => {
-    console.log("values", values)
-    resetForm();
-  }
-
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    setLoading(true)
+  const dispatch = useDispatch()
 
-
+  const loginUser = async () => {
     try {
-
-      const response = await axios.post(`${BASE_URL}/login`,
-        {
-          email,
-          password,
-        },
-        { withCredentials: true },
-      )
-
-      navigate("/otpVerification", { state: { email } })
-      message.success(`We have sent 6 digit OTP To ${email} for Verification`)
-      setEmail("")
-
-      const loginUser = response?.data?.result
-
+      await dispatch(handleLogin({
+        email,
+        password
+      })).unwrap()
+      navigate("/todoList")
     } catch (error) {
-      if (error.response) {
-        message.error(error.response.data.message)
-      }
-      console.error("error login", error)
-    } finally {
-      setLoading(false)
+      console.error("error while logging in", error)
     }
   }
-
 
   return (
     <div className='auth-container'>
@@ -69,7 +42,6 @@ const Login = ({ userEmail }) => {
 
           <Formik
             initialValues={initialValues}
-            onSubmit={onSubmit}
             validationSchema={validationSchema}
           >
             {({
@@ -126,11 +98,9 @@ const Login = ({ userEmail }) => {
 
                 <div className="btn-main">
                   <Button
-                    loading={loading}
                     onClick={() => {
-                      handleLogin()
-                    }
-                    }
+                      loginUser()
+                    }}
                     type='primary'
                     className='submit-btn'
                     htmlType='submit'
@@ -143,7 +113,7 @@ const Login = ({ userEmail }) => {
 
                     <a
                       href='#'
-                      onClick={() => navigate("/")}
+                      onClick={() => navigate("/signUp")}
                     >Sign Up</a>
                   </span>
                 </div>

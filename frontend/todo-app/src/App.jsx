@@ -1,41 +1,41 @@
+import { useDispatch, useSelector } from 'react-redux'
 import './App.css'
-import TodoList from './pages/todoList/TodoList'
-import { Routes, Route } from "react-router-dom"
-import { ForgotPassword, Login, SignUp } from "./pages"
-import ResetPassword from './pages/auth/resetPassword/ResetPassword'
-import { useEffect, useState } from 'react'
+import AppRoutes from './routes/AppRoutes'
+import AuthRoutes from './routes/AuthRoutes'
 import Loader from './components/loader/Loader'
-import OtpVerification from './pages/auth/otpVerification/OtpVerification'
-import ChangePassword from './pages/auth/changePassword/ChangePassword'
+import { useEffect } from 'react'
+import { TOKEN } from "./utils/constant"
+import { getProfile } from './store/features/auth/authThunk'
 
 function App() {
 
-  const [isLoading, setIsLoading] = useState(true)
+  const { loading, isLoggedIn } = useSelector((state) => state.auth)
+  console.log("LOADING:", loading)
+  console.log("IS LOGGED IN:", isLoggedIn)
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false)
-    }, 1000)
-    return () => {
-      clearTimeout(timer)
+    const token = localStorage.getItem(TOKEN)
+    if (token) {
+      dispatch(getProfile())
     }
   }, [])
 
-  if (isLoading) {
+  if (loading) {
     return <Loader />
+  }
+
+  if (!isLoggedIn) {
+    return <AuthRoutes />
+  }
+
+  if (isLoggedIn) {
+    return <AppRoutes />
   }
 
   return (
     <>
-      <Routes>
-        <Route path='/' element={<SignUp />}></Route>
-        <Route path='/todoList' element={<TodoList />}></Route>
-        <Route path='/Login' element={<Login />}></Route>
-        <Route path='/forgotPassword' element={<ForgotPassword />}></Route>
-        <Route path='/resetPassword/:token' element={<ResetPassword />}></Route>
-        <Route path='/otpVerification' element={<OtpVerification />}></Route>
-        <Route path='/changePassword' element={<ChangePassword />}></Route>
-      </Routes>
 
     </>
   )
