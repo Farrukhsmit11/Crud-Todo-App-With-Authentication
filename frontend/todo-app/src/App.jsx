@@ -10,8 +10,6 @@ import { getProfile } from './store/features/auth/authThunk'
 function App() {
 
   const { loading, isLoggedIn } = useSelector((state) => state.auth)
-  console.log("LOADING:", loading)
-  console.log("IS LOGGED IN:", isLoggedIn)
 
   const dispatch = useDispatch()
 
